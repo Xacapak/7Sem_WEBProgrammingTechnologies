@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Warhammer 40k - Форум забытой империи</title>
+    <style>
+        /* ОСНОВНЫЕ СТИЛИ */
+        body {
+            background-color: #000000;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
+            color: #cccccc;
+            font-family: "Times New Roman", Georgia, serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.4;
+        }
+
+        /* ГЛАВНЫЙ КОНТЕЙНЕР */
+        .container {
+            width: 900px;
+            margin: 15px auto;
+            border: 3px outset #444444;
+            background-color: #111111;
+            box-shadow: 0 0 20px #330000;
+        }
+
+        /* ШАПКА САЙТА */
+        .header {
+            background: linear-gradient(to bottom, #220000 0%, #110000 100%);
+            padding: 15px 20px;
+            border-bottom: 2px solid #660000;
+            position: relative;
+        }
+
+        .site-title {
+            color: #cc3333;
+            text-shadow: 2px 2px 0 #000000, 0 0 10px #990000;
+            margin: 0;
+            font-size: 28px;
+            letter-spacing: 1px;
+        }
+
+        .site-subtitle {
+            color: #ff9900;
+            margin: 5px 0 0 0;
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        /* НАВИГАЦИЯ В ПРАВОМ ВЕРХНЕМ УГЛУ */
+        .user-nav {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 12px;
+        }
+
+        .user-nav a {
+            color: #ff6666;
+            text-decoration: none;
+            margin-left: 10px;
+            padding: 2px 8px;
+            border: 1px outset #666666;
+            background-color: #222222;
+        }
+
+        .user-nav a:hover {
+            color: #ffff00;
+            background-color: #333333;
+            border: 1px inset #666666;
+        }
+
+        /* БЕГУЩАЯ СТРОКА */
+        .marquee-box {
+            background-color: #1a0000;
+            padding: 8px;
+            margin: 10px 20px;
+            border: 1px dashed #cc3333;
+            border-radius: 3px;
+        }
+
+        .blink {
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* ОСНОВНОЙ КОНТЕНТ */
+        .content {
+            padding: 20px;
+            min-height: 400px;
+        }
+
+        .welcome-message {
+            background-color: #1a1a1a;
+            border: 1px solid #333333;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-left: 4px solid #cc3333;
+        }
+
+        .welcome-message h2 {
+            color: #ff9900;
+            margin-top: 0;
+            border-bottom: 1px dotted #666666;
+            padding-bottom: 5px;
+        }
+
+        /* ТАБЛИЦА РАЗДЕЛОВ */
+        .forum-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 2px outset #333333;
+            margin: 20px 0;
+        }
+
+        .forum-table th {
+            background: linear-gradient(to bottom, #333333 0%, #222222 100%);
+            color: #ffcc00;
+            padding: 10px;
+            border-bottom: 2px solid #444444;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .forum-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #222222;
+            background-color: #1a1a1a;
+            vertical-align: top;
+        }
+
+        .forum-table tr:hover td {
+            background-color: #222222;
+        }
+
+        .section-title {
+            color: #ff6666;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .section-desc {
+            color: #aaaaaa;
+            font-size: 13px;
+            margin-top: 3px;
+        }
+
+        .stats {
+            font-size: 11px;
+            color: #888888;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .last-post {
+            font-size: 12px;
+            color: #aaaaaa;
+        }
+
+        .last-post-author {
+            color: #ff9900;
+            font-weight: bold;
+        }
+
+        .no-posts {
+            color: #666666;
+            font-style: italic;
+            font-size: 11px;
+        }
+
+        /* ПОДВАЛ */
+        .footer {
+            clear: both;
+            text-align: center;
+            padding: 15px;
+            border-top: 1px solid #333333;
+            font-size: 11px;
+            color: #666666;
+            background-color: #0a0a0a;
+        }
+
+        .footer-links {
+            margin: 10px 0;
+        }
+
+        .footer-links a {
+            color: #888888;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 10px;
+        }
+
+        .footer-links a:hover {
+            color: #ff6666;
+            text-decoration: underline;
+        }
+
+        /* ССЫЛКИ */
+        a {
+            color: #ff6666;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #ffff00;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- ШАПКА САЙТА -->
+    <div class="header">
+        <h1 class="site-title">⚔️ ФОРУМ ЗАБЫТОЙ ИМПЕРИИ ⚔️</h1>
+        <p class="site-subtitle">Там, где говорят об истинной войне...</p>
+
+        <!-- НАВИГАЦИЯ ПОЛЬЗОВАТЕЛЯ -->
+        <div class="user-nav">
+            <a href="/register">📝 Регистрация</a>
+            <a href="/login">🔑 Вход</a>
+            <a href="/profile">👤 Профиль</a>
+        </div>
+
+        <!-- БЕГУЩАЯ СТРОКА -->
+        <div class="marquee-box">
+            <marquee behavior="scroll" direction="left" scrollamount="2">
+        <span class="blink" style="color: #ffff00; font-weight: bold; font-size: 16px;">
+            <b th:text="${randomPhrase}">ВЕРНЫЕ СЫНЫ ИМПЕРИИ! ДОБРО ПОЖАЛОВАТЬ!</b>
+        </span>
+            </marquee>
+        </div>
+    </div>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <div class="content">
+        <!-- ПРИВЕТСТВИЕ -->
+        <div class="welcome-message">
+            <h2>ДОБРО ПОЖАЛОВАТЬ НА ФОРУМ!</h2>
+            <p>Здесь собраны лучшие темы по вселенной Warhammer 40,000, где можно обсудить книги, фильмы, игры и многое другое. Место, где можно поболтать о разном, найти единомышленников и погрузиться в атмосферу далёкого будущего.</p>
+            <p><strong>⚠️ Правила просты:</strong> уважайте друг друга, не распространяйте ЕРИСЬ, и помните — в Глубоком Космосе никто не услышит ваши жалобы на модерацию!</p>
+        </div>
+
+        <!-- ТАБЛИЦА РАЗДЕЛОВ ФОРУМА -->
+        <h2 style="color: #ff9900; border-bottom: 1px solid #444444; padding-bottom: 8px;">ФОРУМ</h2>
+
+        <table class="forum-table">
+            <thead>
+            <tr>
+                <th width="60%">Раздел</th>
+                <th width="10%">Тем</th>
+                <th width="10%">Сообщ.</th>
+                <th width="20%">Последнее сообщение</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- ДИНАМИЧЕСКИЕ РАЗДЕЛЫ -->
+            <tr th:each="category : ${categories}">
+                <td>
+                    <a th:href="@{'/forum/' + ${category.id}}" class="section-title">
+                        <span th:text="${category.icon}">🗨️</span>
+                        <span th:text="${category.name}">ОБЩЕЕ</span>
+                    </a>
+                    <div class="section-desc" th:text="${category.description}">
+                        Всё, что не вошло в другие разделы. Новости, анонсы, вопросы по форуму
+                    </div>
+                </td>
+                <td class="stats" th:text="${category.topicCount}">0</td>
+                <td class="stats" th:text="${category.postCount}">0</td>
+                <td class="last-post">
+                    <!-- Если есть последняя тема -->
+                    <div th:if="${category.lastTopic}">
+                        <div th:text="${#dates.format(category.lastTopic.createdAt, 'dd.MM.yy HH:mm')}">
+                            01.01.06 12:00
+                        </div>
+                        <div>
+                            от:
+                            <a th:href="@{'/profile/' + ${category.lastTopic.author.id}}"
+                               class="last-post-author"
+                               th:text="${category.lastTopic.author.username}">
+                                Пользователь
+                            </a>
+                        </div>
+                        <div>
+                            <a th:href="@{'/topic/' + ${category.lastTopic.id}}"
+                               th:text="${category.lastTopic.title}">
+                                Название темы
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Если нет тем -->
+                    <div th:unless="${category.lastTopic}" class="no-posts">
+                        Нет сообщений
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- ФОРУМНАЯ СТАТИСТИКА -->
+        <div style="margin-top: 30px; padding: 15px; background: #1a1a1a; border: 1px solid #333;">
+            <h3 style="color: #ff9900; margin-top: 0; display: inline-block;">СТАТИСТИКА ФОРУМА:</h3>
+            <span style="margin-left: 20px; color: #aaaaaa; font-size: 13px;">
+                Всего пользователей: <b th:text="${totalUsers}">0</b> •
+                Всего сообщений: <b th:text="${totalPosts}">0</b> •
+                Всего тем: <b th:text="${totalTopics}">0</b> •
+                <span th:if="${lastRegisteredUser}">
+                    Новый пользователь: <b th:text="${lastRegisteredUser}">Нет</b>
+                </span>
+            </span>
+        </div>
+    </div>
+
+    <!-- ПОДВАЛ -->
+    <div class="footer">
+        <div class="footer-links">
+            <a href="/about">О форуме</a> |
+            <a href="/contact">Контакты</a> |
+            <a href="/privacy">Конфиденциальность</a> |
+            <a href="/sitemap">Карта сайта</a> |
+            <a href="/rules">Правила</a> |
+            <a href="/help">Помощь</a>
+        </div>
+
+        <p>
+            © 2026</span> «Форум Забытой Империи»<br>
+            Это неофициальный фанатский ресурс.
+        </p>
+
+<!--        &lt;!&ndash; СЧЁТЧИКИ В СТИЛЕ 2000-Х &ndash;&gt;-->
+<!--        <div style="margin-top: 10px;">-->
+<!--            <img src="https://counter.yadro.ru/hit?t52.6" width="88" height="31" alt="Счетчик" border="0">-->
+<!--            <img src="http://top100-images.rambler.ru/top100/counter.gif?1965641" width="88" height="31" alt="Rambler's Top100" border="0">-->
+<!--        </div>-->
+    </div>
+</div>
+
+<!-- JavaScript для динамического контента -->
+<script>
+    // Отображение текущего времени в бегущей строке
+    function updateTimeInMarquee() {
+        var now = new Date();
+        var timeStr = now.toLocaleTimeString('ru-RU', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        var timeElement = document.getElementById('currentTime');
+        if (timeElement) {
+            timeElement.innerText = timeStr;
+        }
+    }
+
+    // Обновление каждую минуту
+    setInterval(updateTimeInMarquee, 60000);
+    updateTimeInMarquee();
+
+    // Эффект мигания
+    document.addEventListener('DOMContentLoaded', function() {
+        var blinkElements = document.querySelectorAll('.blink');
+        blinkElements.forEach(function(el) {
+            setInterval(function() {
+                el.style.opacity = el.style.opacity === '0.5' ? '1' : '0.5';
+            }, 1500);
+        });
+
+        // Подсветка строк таблицы
+        var tableRows = document.querySelectorAll('.forum-table tbody tr');
+        tableRows.forEach(function(row) {
+            row.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#252525';
+                this.style.cursor = 'pointer';
+            });
+            row.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '';
+            });
+            // Клик по строке ведет в раздел
+            row.addEventListener('click', function(e) {
+                if (!e.target.closest('a')) {
+                    var link = this.querySelector('a.section-title');
+                    if (link) {
+                        window.location.href = link.href;
+                    }
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>
