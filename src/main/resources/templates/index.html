@@ -25,9 +25,22 @@
         .container {
             width: 900px;
             margin: 15px auto;
-            border: 3px outset #444444;
             background-color: #111111;
-            box-shadow: 0 0 20px #330000;
+            box-shadow:
+                /* Внутренние тени для глубины */
+                inset 0 0 20px rgba(0, 0, 0, 0.9),
+                inset 0 0 10px rgba(102, 0, 0, 0.5),
+
+                /* Внешние размытые тени для свечения */
+                0 0 15px rgba(255, 51, 0, 0.4),
+                0 0 30px rgba(153, 0, 0, 0.3),
+                0 0 45px rgba(51, 0, 0, 0.2);
+
+            /* Тонкая четкая рамка */
+            border: 1px solid rgba(102, 0, 0, 0.4);
+
+            /* Скругление углов для плавности */
+            border-radius: 3px;
         }
 
         /* ШАПКА САЙТА */
@@ -121,7 +134,7 @@
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            border: 2px outset #333333;
+            border: 2px solid #333333;
             margin: 20px 0;
         }
 
@@ -275,10 +288,14 @@
                         Описание раздела
                     </div>
                 </td>
-                <td class="stats" th:text="${category.topicCount}">0</td>
+                <td class="stats" th:text="${category.topicsNum != null ? category.topicsNum : 0}">0</td>
                 <td class="last-post">
-                    <!-- Заглушка для последнего сообщения -->
-                    <div class="no-posts">
+                    <div th:if="${category.lastPost != null and category.lastPost != ''}"
+                         th:text="${category.lastPost}">
+                        Последнее сообщение
+                    </div>
+                    <div th:if="${category.lastPost == null or category.lastPost == ''}"
+                         class="no-posts">
                         Нет сообщений
                     </div>
                 </td>

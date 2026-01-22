@@ -35,6 +35,7 @@ public class HomeController {
 
         model.addAttribute("randomPhrase", randomPhrase);
         model.addAttribute("currentYear", java.time.Year.now().getValue());
+        model.addAttribute("categories", categories);
 
         return "index";  // Теперь ищет templates/index.html
     }

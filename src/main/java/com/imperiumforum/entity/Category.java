@@ -61,4 +61,7 @@ public class Category {
     public Integer getTopicsNum() { return topicsNum; }
     public void setTopicsNum(Integer topicsNum) { this.topicsNum = topicsNum; }
 
+    public String getLastPost() { return lastPost; }
+    public void setLastPost(String lastPost) { this.lastPost = lastPost; }
+
 }
