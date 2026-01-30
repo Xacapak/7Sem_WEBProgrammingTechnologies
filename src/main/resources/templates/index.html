@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Warhammer 40k - Форум забытой империи</title>
@@ -241,9 +241,19 @@
 
         <!-- НАВИГАЦИЯ ПОЛЬЗОВАТЕЛЯ -->
         <div class="user-nav">
-            <a href="/register">📝 Регистрация</a>
-            <a href="/login">🔑 Вход</a>
-            <a href="/profile">👤 Профиль</a>
+            <span sec:authorize="!isAuthenticated()">
+                <a href="/register">📝 Регистрация</a>
+                <a href="/login">🔑 Вход</a>
+            </span>
+                    <span sec:authorize="isAuthenticated()">
+                <span style="color: #ff9900;" sec:authentication="name"></span>
+                <a href="/profile">👤 Профиль</a>
+                <form th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit" style="background: none; border: none; color: #ff6666; cursor: pointer;">
+                        🚪 Выход
+                    </button>
+                </form>
+            </span>
         </div>
 
         <!-- БЕГУЩАЯ СТРОКА -->

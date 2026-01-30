@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация - Форум Империума</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #ccc;
+            font-family: "Times New Roman", serif;
+            margin: 0;
+            padding: 20px;
+            background-image: url('/images/ImageBackground.jpg');
+            background-size: cover;
+        }
+
+        .register-container {
+            width: 450px;
+            margin: 30px auto;
+            background: rgba(17, 17, 17, 0.95);
+            padding: 30px;
+            border: 2px solid #660000;
+            box-shadow: 0 0 20px rgba(255, 51, 0, 0.5);
+        }
+
+        h2 {
+            color: #ff9900;
+            text-align: center;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ff6666;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #ff9900;
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(to bottom, #006600, #003300);
+            color: #ffcc00;
+            border: 1px solid #009900;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .btn-register:hover {
+            background: linear-gradient(to bottom, #009900, #006600);
+        }
+
+        .error {
+            color: #ff3333;
+            background: rgba(255, 0, 0, 0.1);
+            padding: 10px;
+            border: 1px solid #ff3333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .success {
+            color: #33ff33;
+            background: rgba(0, 255, 0, 0.1);
+            padding: 10px;
+            border: 1px solid #33ff33;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-error {
+            color: #ff6666;
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .links a {
+            color: #ff9900;
+            text-decoration: none;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="register-container">
+    <h2>ВСТУПЛЕНИЕ В РЯДЫ ИМПЕРИУМА</h2>
+
+    <!-- Сообщения об ошибках -->
+    <div th:if="${errorMessage}" class="error">
+        ❌ [[${errorMessage}]]
+    </div>
+
+    <div th:if="${param.registered}" class="success">
+        ✅ Регистрация успешна! Теперь вы можете войти в систему.
+    </div>
+
+    <!-- Форма регистрации -->
+    <form th:action="@{/register}" method="post" th:object="${user}">
+
+        <!-- Поле: Имя пользователя -->
+        <div class="form-group">
+            <label for="username">Имя пользователя:</label>
+            <input type="text" id="username" th:field="*{username}"
+                   placeholder="От 3 до 50 символов" required>
+            <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"
+                  class="form-error"></span>
+        </div>
+
+        <!-- Поле: Email -->
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" th:field="*{email}"
+                   placeholder="example@imperium.ru" required>
+            <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
+                  class="form-error"></span>
+        </div>
+
+        <!-- Поле: Пароль -->
+        <div class="form-group">
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" th:field="*{password}"
+                   placeholder="Минимум 6 символов" required>
+            <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
+                  class="form-error"></span>
+        </div>
+
+        <!-- Поле: Подтверждение пароля -->
+        <div class="form-group">
+            <label for="confirmPassword">Подтвердите пароль:</label>
+            <input type="password" id="confirmPassword" th:field="*{confirmPassword}"
+                   placeholder="Повторите пароль" required>
+            <span th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"
+                  class="form-error"></span>
+        </div>
+
+        <!-- Кнопка регистрации -->
+        <button type="submit" class="btn-register">ПРИНЯТЬ ПРИСЯГУ ИМПЕРАТОРУ!</button>
+    </form>
+
+    <div class="links">
+        <p>Уже есть аккаунт? <a href="/login">Войти</a></p>
+        <p><a href="/">← Вернуться на главную</a></p>
+    </div>
+</div>
+</body>
+</html>

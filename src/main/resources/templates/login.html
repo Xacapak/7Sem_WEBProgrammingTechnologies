@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход - Форум Империума</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #ccc;
+            font-family: "Times New Roman", serif;
+            margin: 0;
+            padding: 20px;
+            background-image: url('/images/ImageBackground.jpg');
+            background-size: cover;
+        }
+
+        .login-container {
+            width: 400px;
+            margin: 50px auto;
+            background: rgba(17, 17, 17, 0.9);
+            padding: 30px;
+            border: 2px solid #660000;
+            box-shadow: 0 0 20px rgba(255, 51, 0, 0.5);
+        }
+
+        h2 {
+            color: #ff9900;
+            text-align: center;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ff6666;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+            font-family: inherit;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(to bottom, #660000, #330000);
+            color: #ffcc00;
+            border: 1px solid #990000;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(to bottom, #990000, #660000);
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .error {
+            color: #ff3333;
+            background: rgba(255, 0, 0, 0.1);
+            padding: 10px;
+            border: 1px solid #ff3333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <h2>НАЗОВИСЬ СЫН ИМПЕРИИ!</h2>
+
+    <div th:if="${param.error}" class="error">
+        ❌ Неверное имя пользователя или пароль!
+    </div>
+
+    <div th:if="${param.logout}" class="error" style="color: #33ff33; border-color: #33ff33;">
+        ✅ Вы успешно вышли из системы
+    </div>
+
+    <form th:action="@{/login}" method="post">
+        <div class="form-group">
+            <label for="username">Имя пользователя:</label>
+            <input type="text" id="username" name="username" required
+                   placeholder="Введите ваш логин">
+        </div>
+
+        <div class="form-group">
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password" required
+                   placeholder="Введите ваш пароль">
+        </div>
+
+        <button type="submit" class="btn-login">ВОЙТИ В СИСТЕМУ</button>
+    </form>
+
+    <div class="links">
+        <p>Нет аккаунта? <a href="/register" style="color: #ff9900;">Зарегистрироваться</a></p>
+        <p><a href="/" style="color: #aaaaaa;">← Вернуться на главную</a></p>
+    </div>
+</div>
+</body>
+</html>
