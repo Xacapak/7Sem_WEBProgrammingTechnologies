@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Создание новой темы - Форум Империума</title>
+    <style>
+        .new-topic-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(26, 26, 26, 0.95);
+            border: 2px solid #660000;
+        }
+
+        .new-topic-title {
+            color: #ffcc00;
+            text-align: center;
+        }
+
+        .new-topic-form input[type="text"],
+        .new-topic-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+            font-family: inherit;
+        }
+
+        .new-topic-form textarea {
+            height: 300px;
+            resize: vertical;
+        }
+
+        .new-topic-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(to bottom, #006600, #003300);
+            color: #ffcc00;
+            border: 1px solid #009900;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .new-topic-btn:hover {
+            background: linear-gradient(to bottom, #009900, #006600);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Шапка -->
+    <div class="header">
+        <h1 class="site-title">⚔️ ФОРУМ ЗАБЫТОЙ ИМПЕРИИ ⚔️</h1>
+        <div class="user-nav">
+            <a href="/">🏠 Главная</a>
+            <a th:href="@{'/forum/' + ${category.id}}">← К разделу</a>
+        </div>
+    </div>
+
+    <!-- Форма создания темы -->
+    <div class="new-topic-container">
+        <h2 class="new-topic-title">
+            📝 Создание новой темы в разделе "[[${category.name}]]"
+        </h2>
+
+        <form th:action="@{'/forum/' + ${category.id} + '/new-topic'}"
+              method="post"
+              class="new-topic-form"
+              th:object="${topic}">
+
+            <input type="text" name="title" th:field="*{title}"
+                   placeholder="Название темы" required
+                   maxlength="200">
+
+            <textarea name="content" th:field="*{content}"
+                      placeholder="Содержание первого сообщения..."
+                      required></textarea>
+
+            <button type="submit" class="new-topic-btn">
+                🚀 СОЗДАТЬ ТЕМУ
+            </button>
+        </form>
+
+        <a th:href="@{'/forum/' + ${category.id}}" class="back-link">
+            ← Отмена и возврат к разделу
+        </a>
+    </div>
+
+    <!-- Подвал -->
+    <div class="footer">
+        <p>© 2024 Форум Забытой Империи</p>
+    </div>
+</div>
+</body>
+</html>

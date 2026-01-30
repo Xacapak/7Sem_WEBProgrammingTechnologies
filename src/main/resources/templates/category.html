@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${category.name} + ' - Форум Империума'">Раздел форума</title>
+    <style>
+        /* ОСНОВНЫЕ СТИЛИ (как в index.html) */
+        body {
+            background-color: #000000;
+            background-image: url('/images/ImageBackground.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #cccccc;
+            font-family: "Times New Roman", Georgia, serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.4;
+        }
+
+        /* ГЛАВНЫЙ КОНТЕЙНЕР */
+        .container {
+            width: 900px;
+            margin: 15px auto;
+            background-color: #111111;
+            box-shadow:
+                inset 0 0 20px rgba(0, 0, 0, 0.9),
+                inset 0 0 10px rgba(102, 0, 0, 0.5),
+                0 0 15px rgba(255, 51, 0, 0.4),
+                0 0 30px rgba(153, 0, 0, 0.3),
+                0 0 45px rgba(51, 0, 0, 0.2);
+            border: 1px solid rgba(102, 0, 0, 0.4);
+            border-radius: 3px;
+        }
+
+        /* ШАПКА САЙТА */
+        .header {
+            background: linear-gradient(to bottom, #220000 0%, #110000 100%);
+            padding: 15px 20px;
+            border-bottom: 2px solid #660000;
+            position: relative;
+        }
+
+        .site-title {
+            color: #cc3333;
+            text-shadow: 2px 2px 0 #000000, 0 0 10px #990000;
+            margin: 0;
+            font-size: 28px;
+            letter-spacing: 1px;
+        }
+
+        .site-subtitle {
+            color: #ff9900;
+            margin: 5px 0 0 0;
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        /* НАВИГАЦИЯ */
+        .user-nav {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 12px;
+        }
+
+        .user-nav a {
+            color: #ff6666;
+            text-decoration: none;
+            margin-left: 10px;
+            padding: 2px 8px;
+            border: 1px outset #666666;
+            background-color: #222222;
+        }
+
+        .user-nav a:hover {
+            color: #ffff00;
+            background-color: #333333;
+            border: 1px inset #666666;
+        }
+
+        /* ЗАГОЛОВОК РАЗДЕЛА */
+        .forum-header {
+            background: linear-gradient(to right, #1a0000, #330000);
+            padding: 20px;
+            margin: 20px;
+            border: 2px solid #660000;
+            border-radius: 5px;
+        }
+
+        .category-title {
+            color: #ffcc00;
+            font-size: 28px;
+            margin: 0 0 10px 0;
+        }
+
+        .category-description {
+            color: #aaaaaa;
+            margin: 10px 0 15px 0;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .category-stats {
+            color: #888888;
+            font-size: 14px;
+        }
+
+        /* КНОПКА СОЗДАНИЯ ТЕМЫ */
+        .new-topic-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(to bottom, #006600, #003300);
+            color: #ffcc00;
+            border: 1px solid #009900;
+            text-decoration: none;
+            margin: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .new-topic-btn:hover {
+            background: linear-gradient(to bottom, #009900, #006600);
+            color: #ffff00;
+            text-decoration: none;
+        }
+
+        /* ТАБЛИЦА ТЕМ */
+        .topics-table {
+            width: calc(100% - 40px);
+            margin: 20px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 2px solid #333333;
+        }
+
+        .topics-table th {
+            background: linear-gradient(to bottom, #333333 0%, #222222 100%);
+            color: #ffcc00;
+            padding: 12px 15px;
+            border-bottom: 2px solid #444444;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .topics-table td {
+            padding: 15px;
+            border-bottom: 1px solid #222222;
+            background-color: #1a1a1a;
+            vertical-align: top;
+        }
+
+        .topics-table tr:hover td {
+            background-color: #222222;
+        }
+
+        .topic-title {
+            color: #ff6666;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .topic-title:hover {
+            color: #ffff00;
+            text-decoration: underline;
+        }
+
+        .topic-meta {
+            color: #888888;
+            font-size: 13px;
+        }
+
+        .topic-stats {
+            text-align: center;
+            font-size: 13px;
+            color: #aaaaaa;
+        }
+
+        .topic-stats .number {
+            display: block;
+            font-size: 16px;
+            color: #ff9900;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .last-post {
+            font-size: 13px;
+            color: #aaaaaa;
+        }
+
+        .last-post-author {
+            color: #ff9900;
+            font-weight: bold;
+        }
+
+        .pinned {
+            color: #ffff00;
+            margin-right: 5px;
+        }
+
+        .locked {
+            color: #ff3333;
+            margin-right: 5px;
+        }
+
+        /* ПАГИНАЦИЯ */
+        .pagination {
+            text-align: center;
+            margin: 30px 20px;
+            padding: 15px;
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid #333;
+        }
+
+        .pagination a {
+            color: #ff9900;
+            margin: 0 5px;
+            padding: 8px 12px;
+            border: 1px solid #444;
+            text-decoration: none;
+        }
+
+        .pagination a:hover {
+            background: #333;
+            border-color: #ff9900;
+        }
+
+        .pagination .current {
+            color: #ffff00;
+            font-weight: bold;
+            margin: 0 5px;
+            padding: 8px 12px;
+            border: 1px solid #ff9900;
+            background: rgba(255, 153, 0, 0.1);
+        }
+
+        /* ПУСТОЙ СПИСОК */
+        .empty-topics {
+            text-align: center;
+            padding: 40px;
+            color: #666666;
+            font-style: italic;
+            font-size: 16px;
+        }
+
+        /* ПОДВАЛ */
+        .footer {
+            clear: both;
+            text-align: center;
+            padding: 15px;
+            border-top: 1px solid #333333;
+            font-size: 11px;
+            color: #666666;
+            background-color: #0a0a0a;
+        }
+
+        .footer-links {
+            margin: 10px 0;
+        }
+
+        .footer-links a {
+            color: #888888;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 10px;
+        }
+
+        .footer-links a:hover {
+            color: #ff6666;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- ШАПКА -->
+    <div class="header">
+        <h1 class="site-title">⚔️ ФОРУМ ЗАБЫТОЙ ИМПЕРИИ ⚔️</h1>
+        <p class="site-subtitle">Архив дискуссий верных сынов Империума</p>
+
+        <!-- НАВИГАЦИЯ -->
+        <div class="user-nav">
+            <a href="/">🏠 Главная</a>
+            <span sec:authorize="isAuthenticated()">
+                <a th:href="@{'/profile'}">👤 <span sec:authentication="name"></span></a>
+            </span>
+            <span sec:authorize="!isAuthenticated()">
+                <a href="/login">🔐 Вход</a>
+            </span>
+        </div>
+    </div>
+
+    <!-- ЗАГОЛОВОК РАЗДЕЛА -->
+    <div class="forum-header">
+        <h1 class="category-title">
+            <span th:text="${category.icon}">📜</span>
+            <span th:text="${category.name}">Название раздела</span>
+        </h1>
+        <p class="category-description" th:text="${category.description}">
+            Описание раздела
+        </p>
+        <div class="category-stats">
+            Тем: <b th:text="${totalTopics}">0</b> •
+            Сообщений: <b th:text="${totalPosts}">0</b>
+        </div>
+    </div>
+
+    <!-- КНОПКА СОЗДАНИЯ НОВОЙ ТЕМЫ -->
+    <div sec:authorize="isAuthenticated()">
+        <a th:href="@{'/forum/' + ${category.id} + '/new-topic'}"
+           class="new-topic-btn">
+            📝 Создать новую тему
+        </a>
+    </div>
+
+    <!-- ЗАКРЕПЛЕННЫЕ ТЕМЫ -->
+    <div th:if="${not #lists.isEmpty(pinnedTopics)}">
+        <h3 style="color: #ff9900; margin: 20px 20px 10px 20px;">
+            📌 Закрепленные темы
+        </h3>
+
+        <table class="topics-table">
+            <thead>
+            <tr>
+                <th width="60%">Тема</th>
+                <th width="15%">Статистика</th>
+                <th width="25%">Последнее сообщение</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="topic : ${pinnedTopics}">
+                <td>
+                    <a th:href="@{'/topic/' + ${topic.id}}" class="topic-title">
+                        <span class="pinned">📌</span>
+                        <span th:text="${topic.title}">Название темы</span>
+                        <span th:if="${topic.isLocked}" class="locked">🔒</span>
+                    </a>
+                    <div class="topic-meta">
+                        Автор:
+                        <span style="color: #ff9900;" th:text="${topic.author.username}"></span> •
+                        Создано:
+                        <span th:text="${#temporals.format(topic.createdAt, 'dd.MM.yyyy HH:mm')}"></span>
+                    </div>
+                </td>
+                <td class="topic-stats">
+                    <span class="number" th:text="${topic.viewCount}">0</span>
+                    <span>Просмотров</span>
+                    <br>
+                    <span class="number" th:text="${topic.postCount}">0</span>
+                    <span>Ответов</span>
+                </td>
+                <td class="last-post">
+                    <div th:if="${topic.lastPostAt != null}">
+                        <span th:text="${#temporals.format(topic.lastPostAt, 'dd.MM.yyyy HH:mm')}"></span>
+                        <br>
+                        Автор:
+                        <span class="last-post-author"
+                              th:text="${topic.lastPostBy != null ? topic.lastPostBy.username : 'Неизвестно'}">
+                                Автор
+                            </span>
+                    </div>
+                    <div th:if="${topic.lastPostAt == null}">
+                        Нет сообщений
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ОБЫЧНЫЕ ТЕМЫ -->
+    <h3 style="color: #ff9900; margin: 20px 20px 10px 20px;">
+        🗨️ Темы раздела
+    </h3>
+
+    <!-- ЕСЛИ ТЕМЫ ЕСТЬ -->
+    <div th:if="${not #lists.isEmpty(topics)}">
+        <table class="topics-table">
+            <thead>
+            <tr>
+                <th width="60%">Тема</th>
+                <th width="15%">Статистика</th>
+                <th width="25%">Последнее сообщение</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="topic : ${topics}">
+                <td>
+                    <a th:href="@{'/topic/' + ${topic.id}}" class="topic-title">
+                        <span th:text="${topic.title}">Название темы</span>
+                        <span th:if="${topic.isLocked}" class="locked">🔒</span>
+                    </a>
+                    <div class="topic-meta">
+                        Автор:
+                        <span style="color: #ff9900;" th:text="${topic.author.username}"></span> •
+                        Создано:
+                        <span th:text="${#temporals.format(topic.createdAt, 'dd.MM.yyyy HH:mm')}"></span>
+                    </div>
+                </td>
+                <td class="topic-stats">
+                    <span class="number" th:text="${topic.viewCount}">0</span>
+                    <span>Просмотров</span>
+                    <br>
+                    <span class="number" th:text="${topic.postCount}">0</span>
+                    <span>Ответов</span>
+                </td>
+                <td class="last-post">
+                    <div th:if="${topic.lastPostAt != null}">
+                        <span th:text="${#temporals.format(topic.lastPostAt, 'dd.MM.yyyy HH:mm')}"></span>
+                        <br>
+                        Автор:
+                        <span class="last-post-author"
+                              th:text="${topic.lastPostBy != null ? topic.lastPostBy.username : 'Неизвестно'}">
+                                Автор
+                            </span>
+                    </div>
+                    <div th:if="${topic.lastPostAt == null}">
+                        Нет сообщений
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- ПАГИНАЦИЯ -->
+        <div th:if="${totalPages > 1}" class="pagination">
+            <span th:each="page : ${#numbers.sequence(1, totalPages)}">
+                <a th:if="${page != currentPage}"
+                   th:href="@{'/forum/' + ${category.id} + '?page=' + ${page}}">
+                    [[${page}]]
+                </a>
+                <span th:if="${page == currentPage}" class="current">
+                    [[${page}]]
+                </span>
+            </span>
+        </div>
+    </div>
+
+    <!-- ЕСЛИ ТЕМ НЕТ -->
+    <div th:if="${#lists.isEmpty(topics) and #lists.isEmpty(pinnedTopics)}"
+         class="empty-topics">
+        <h3>📭 В этом разделе пока нет тем</h3>
+        <p>Будьте первым, кто создаст тему в этом разделе!</p>
+        <div sec:authorize="isAuthenticated()">
+            <a th:href="@{'/forum/' + ${category.id} + '/new-topic'}"
+               class="new-topic-btn">
+                📝 Создать первую тему
+            </a>
+        </div>
+        <div sec:authorize="!isAuthenticated()">
+            <p>Для создания темы необходимо
+                <a href="/login" style="color: #ff9900;">войти</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- ПОДВАЛ -->
+    <div class="footer">
+        <div class="footer-links">
+            <a href="/about">О форуме</a> |
+            <a href="/contact">Контакты</a> |
+            <a href="/privacy">Конфиденциальность</a> |
+            <a href="/sitemap">Карта сайта</a> |
+            <a href="/rules">Правила</a> |
+            <a href="/help">Помощь</a>
+        </div>
+        <p>© 2026 «Форум Забытой Империи»<br>Это неофициальный фанатский ресурс.</p>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Подсветка строк таблицы
+        document.querySelectorAll('.topics-table tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#252525';
+                this.style.cursor = 'pointer';
+            });
+            row.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '';
+            });
+
+            // Клик по строке ведет в тему
+            row.addEventListener('click', function(e) {
+                if (!e.target.closest('a')) {
+                    const link = this.querySelector('a.topic-title');
+                    if (link) {
+                        window.location.href = link.href;
+                    }
+                }
+            });
+        });
+
+        // Анимация кнопки
+        const newTopicBtn = document.querySelector('.new-topic-btn');
+        if (newTopicBtn) {
+            newTopicBtn.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+                this.style.transition = 'transform 0.3s';
+            });
+            newTopicBtn.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        }
+
+        // Подсветка текущей страницы пагинации
+        const currentPage = document.querySelector('.pagination .current');
+        if (currentPage) {
+            setInterval(() => {
+                currentPage.style.boxShadow = currentPage.style.boxShadow.includes('rgba(255, 153, 0, 0.5)')
+                    ? '0 0 5px rgba(255, 153, 0, 0.3)'
+                    : '0 0 5px rgba(255, 153, 0, 0.5)';
+            }, 1000);
+        }
+    });
+</script>
+</body>
+</html>

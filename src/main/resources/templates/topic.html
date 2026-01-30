@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${topic != null ? topic.title + ' - Форум Империума' : 'Тема не найдена'}">Тема форума</title>
+    <style>
+        /* Стили из category.html */
+        body {
+            background-color: #000000;
+            background-image: url('/images/ImageBackground.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #cccccc;
+            font-family: "Times New Roman", Georgia, serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.4;
+        }
+
+        .container {
+            width: 900px;
+            margin: 15px auto;
+            background-color: #111111;
+            box-shadow:
+                inset 0 0 20px rgba(0, 0, 0, 0.9),
+                inset 0 0 10px rgba(102, 0, 0, 0.5),
+                0 0 15px rgba(255, 51, 0, 0.4),
+                0 0 30px rgba(153, 0, 0, 0.3),
+                0 0 45px rgba(51, 0, 0, 0.2);
+            border: 1px solid rgba(102, 0, 0, 0.4);
+            border-radius: 3px;
+        }
+
+        .header {
+            background: linear-gradient(to bottom, #220000 0%, #110000 100%);
+            padding: 15px 20px;
+            border-bottom: 2px solid #660000;
+            position: relative;
+        }
+
+        .site-title {
+            color: #cc3333;
+            text-shadow: 2px 2px 0 #000000, 0 0 10px #990000;
+            margin: 0;
+            font-size: 28px;
+            letter-spacing: 1px;
+        }
+
+        .user-nav {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 12px;
+        }
+
+        .user-nav a {
+            color: #ff6666;
+            text-decoration: none;
+            margin-left: 10px;
+            padding: 2px 8px;
+            border: 1px outset #666666;
+            background-color: #222222;
+        }
+
+        .user-nav a:hover {
+            color: #ffff00;
+            background-color: #333333;
+            border: 1px inset #666666;
+        }
+
+        .topic-header {
+            background: linear-gradient(to right, #1a0000, #330000);
+            padding: 20px;
+            margin: 20px;
+            border: 2px solid #660000;
+            border-radius: 5px;
+        }
+
+        .topic-title {
+            color: #ffcc00;
+            font-size: 24px;
+            margin: 0 0 10px 0;
+        }
+
+        .topic-meta {
+            color: #aaa;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .post-container {
+            margin: 20px;
+            border: 1px solid #333;
+            background: rgba(26, 26, 26, 0.9);
+            border-radius: 3px;
+        }
+
+        .post-header {
+            background: rgba(51, 0, 0, 0.5);
+            padding: 10px 15px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .post-author {
+            color: #ff9900;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .post-date {
+            color: #888;
+            font-size: 13px;
+        }
+
+        .post-content {
+            padding: 20px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .reply-form {
+            margin: 20px;
+            padding: 20px;
+            background: rgba(26, 26, 26, 0.9);
+            border: 1px solid #333;
+            border-radius: 3px;
+        }
+
+        .reply-form textarea {
+            width: 100%;
+            height: 150px;
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 12px;
+            font-family: inherit;
+            margin-bottom: 15px;
+            resize: vertical;
+            font-size: 14px;
+        }
+
+        .reply-btn {
+            padding: 12px 30px;
+            background: linear-gradient(to bottom, #006600, #003300);
+            color: #ffcc00;
+            border: 1px solid #009900;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .reply-btn:hover {
+            background: linear-gradient(to bottom, #009900, #006600);
+            transform: translateY(-2px);
+        }
+
+        .locked-message {
+            text-align: center;
+            padding: 30px;
+            color: #ff3333;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff3333;
+            margin: 20px;
+            border-radius: 3px;
+        }
+
+        .pagination {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid #333;
+        }
+
+        .pagination a {
+            color: #ff9900;
+            margin: 0 5px;
+            padding: 8px 12px;
+            border: 1px solid #444;
+            text-decoration: none;
+        }
+
+        .pagination a:hover {
+            background: #333;
+            border-color: #ff9900;
+        }
+
+        .pagination .current {
+            color: #ffff00;
+            font-weight: bold;
+            margin: 0 5px;
+            padding: 8px 12px;
+            border: 1px solid #ff9900;
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 40px;
+            color: #ff3333;
+            font-size: 18px;
+        }
+
+        .author-badge {
+            display: inline-block;
+            background: rgba(255, 51, 0, 0.2);
+            color: #ff3333;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .footer {
+            clear: both;
+            text-align: center;
+            padding: 15px;
+            border-top: 1px solid #333333;
+            font-size: 11px;
+            color: #666666;
+            background-color: #0a0a0a;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Шапка -->
+    <div class="header">
+        <h1 class="site-title">⚔️ ФОРУМ ЗАБЫТОЙ ИМПЕРИИ ⚔️</h1>
+
+        <!-- Навигация -->
+        <div class="user-nav">
+            <a href="/">🏠 Главная</a>
+            <a th:if="${topic != null}" th:href="@{'/forum/' + ${topic.category.id}}">← К разделу</a>
+            <span sec:authorize="isAuthenticated()">
+                <a th:href="@{'/profile'}">👤 <span sec:authentication="name"></span></a>
+            </span>
+        </div>
+    </div>
+
+    <!-- Если тема не найдена -->
+    <div th:if="${topic == null}" class="error-message">
+        <h2>⚠️ Тема не найдена</h2>
+        <p>Возможно, тема была удалена или у вас нет доступа к ней.</p>
+        <a href="/" style="color: #ff9900;">← Вернуться на главную</a>
+    </div>
+
+    <!-- Если тема найдена -->
+    <div th:if="${topic != null}">
+        <!-- Заголовок темы -->
+        <div class="topic-header">
+            <h1 class="topic-title" th:text="${topic.title}">Название темы</h1>
+            <div class="topic-meta">
+                <span>Раздел:
+                    <a th:href="@{'/forum/' + ${topic.category.id}}" style="color: #ff9900;">
+                        [[${topic.category.name}]]
+                    </a>
+                </span>
+                •
+                <span>Автор:
+                    <span style="color: #ff9900;" th:text="${topic.author.username}"></span>
+                </span>
+                •
+                <span>Создано:
+                    <span th:text="${#temporals.format(topic.createdAt, 'dd.MM.yyyy HH:mm')}"></span>
+                </span>
+                •
+                <span>Просмотров: [[${topic.viewCount}]]</span>
+                •
+                <span>Ответов: [[${totalPosts != null ? totalPosts - 1 : 0}]]</span>
+
+                <span th:if="${topic.isLocked}" style="color: #ff3333; margin-left: 10px;">
+                    🔒 Тема закрыта
+                </span>
+                <span th:if="${topic.isPinned}" style="color: #ffff00; margin-left: 10px;">
+                    📌 Закреплено
+                </span>
+            </div>
+        </div>
+
+        <!-- Сообщение о закрытой теме -->
+        <div th:if="${topic.isLocked}" class="locked-message">
+            ⚠️ Эта тема закрыта для новых сообщений
+        </div>
+
+        <!-- Первое сообщение (сама тема) -->
+        <div class="post-container">
+            <div class="post-header">
+                <div>
+                    <span class="post-author" th:text="${topic.author.username}">Автор</span>
+                    <span class="author-badge">Автор темы</span>
+                </div>
+                <span class="post-date">
+                    [[${#temporals.format(topic.createdAt, 'dd.MM.yyyy HH:mm')}]]
+                </span>
+            </div>
+            <div class="post-content">
+                [[${topic.content}]]
+            </div>
+        </div>
+
+        <!-- Ответы -->
+        <div th:each="post : ${posts}" class="post-container" th:id="'post-' + ${post.id}">
+            <div class="post-header">
+                <div>
+                    <span class="post-author" th:text="${post.author.username}">Автор</span>
+                    <span th:if="${post.author.id == topic.author.id}" class="author-badge">
+                        Автор темы
+                    </span>
+                </div>
+                <span class="post-date">
+                    [[${#temporals.format(post.createdAt, 'dd.MM.yyyy HH:mm')}]]
+                    <span th:if="${post.isEdited}"> (ред.)</span>
+                </span>
+            </div>
+            <div class="post-content">
+                [[${post.content}]]
+            </div>
+        </div>
+
+        <!-- Пагинация -->
+        <div th:if="${totalPages > 1}" class="pagination">
+            <span th:each="page : ${#numbers.sequence(1, totalPages)}">
+                <a th:if="${page != currentPage}"
+                   th:href="@{'/topic/' + ${topic.id} + '?page=' + ${page}}">
+                    [[${page}]]
+                </a>
+                <span th:if="${page == currentPage}" class="current">
+                    [[${page}]]
+                </span>
+            </span>
+        </div>
+
+        <!-- Форма ответа -->
+        <div sec:authorize="isAuthenticated()" th:if="${!topic.isLocked}">
+            <div class="reply-form">
+                <h3 style="color: #ff9900; margin-top: 0;">✍️ Написать ответ</h3>
+                <form th:action="@{'/topic/' + ${topic.id} + '/reply'}" method="post">
+                    <textarea name="content"
+                              placeholder="Введите ваше сообщение..."
+                              required></textarea>
+                    <button type="submit" class="reply-btn">Отправить ответ</button>
+                </form>
+            </div>
+        </div>
+
+        <div sec:authorize="!isAuthenticated()" th:if="${!topic.isLocked}">
+            <div style="text-align: center; padding: 20px; margin: 20px; background: rgba(26,26,26,0.9); border: 1px solid #333;">
+                <p>Чтобы отвечать в теме, необходимо
+                    <a href="/login" style="color: #ff9900;">войти</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подвал -->
+    <div class="footer">
+        <div class="footer-links">
+            <a href="/about">О форуме</a> |
+            <a href="/contact">Контакты</a> |
+            <a href="/privacy">Конфиденциальность</a> |
+            <a href="/sitemap">Карта сайта</a> |
+            <a href="/rules">Правила</a> |
+            <a href="/help">Помощь</a>
+        </div>
+        <p>© 2026 «Форум Забытой Империи»<br>Это неофициальный фанатский ресурс.</p>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Прокрутка к сообщению при наличии якоря
+        const hash = window.location.hash;
+        if (hash) {
+            const element = document.querySelector(hash);
+            if (element) {
+                setTimeout(() => {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                    element.style.boxShadow = '0 0 10px rgba(255, 200, 0, 0.5)';
+                    setTimeout(() => element.style.boxShadow = '', 2000);
+                }, 500);
+            }
+        }
+
+        // Подсветка сообщений
+        document.querySelectorAll('.post-container').forEach(post => {
+            post.addEventListener('mouseenter', function() {
+                this.style.borderColor = '#660000';
+                this.style.backgroundColor = 'rgba(40, 40, 40, 0.9)';
+            });
+            post.addEventListener('mouseleave', function() {
+                this.style.borderColor = '#333';
+                this.style.backgroundColor = 'rgba(26, 26, 26, 0.9)';
+            });
+        });
+
+        // Предотвращение двойной отправки
+        const replyForm = document.querySelector('form');
+        if (replyForm) {
+            replyForm.addEventListener('submit', function() {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Отправка...';
+                    submitBtn.style.opacity = '0.7';
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

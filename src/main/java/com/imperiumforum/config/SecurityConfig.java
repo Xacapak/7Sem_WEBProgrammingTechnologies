@@ -29,7 +29,9 @@ public class SecurityConfig {
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
-                                "/uploads/**"
+                                "/uploads/**",
+                                "/forum/{id}",
+                                "/topic/{id}"
                         ).permitAll()
 
                         // Защищенные страницы (только для авторизованных)
@@ -37,7 +39,9 @@ public class SecurityConfig {
                                 "/profile/**",
                                 "/forum/new",
                                 "/topic/new",
-                                "/message/**"
+                                "/message/**",
+                                "/forum/**",
+                                "/topic/**"
                         ).authenticated()
 
                         // Админские страницы
